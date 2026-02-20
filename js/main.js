@@ -1,6 +1,6 @@
-import { state, saveState } from './state.js';
+import { state, saveState, syncState } from './state.js';
 import { createNewFile, decompressFromURL } from './utils.js';
-import { DOM, loadActiveFile, renderSidebar, render, closeDeleteModal } from './ui.js';
+import { DOM, loadActiveFile, renderSidebar, render, closeDeleteModal, lastSavedContent } from './ui.js';
 
 // Initialize
 window.addEventListener('load', () => {
@@ -69,6 +69,7 @@ window.addEventListener('hashchange', () => {
     let hashContent = decompressFromURL(hash);
 
     if (hashContent) {
+        syncState();
         const existing = state.files.find(f => f.content === hashContent);
         if (existing) {
             if (state.activeId !== existing.id) {
@@ -95,6 +96,7 @@ DOM.cancelDeleteBtn.addEventListener('click', closeDeleteModal);
 
 DOM.confirmDeleteBtn.addEventListener('click', () => {
     if (state.fileToDelete) {
+        syncState();
         state.files = state.files.filter(f => f.id !== state.fileToDelete);
 
         if (state.files.length === 0) {
@@ -128,6 +130,7 @@ DOM.sidebarToggle.addEventListener('click', () => {
 });
 
 DOM.newNoteBtn.addEventListener('click', () => {
+    syncState();
     const newFile = createNewFile(state.files, '');
     state.files.push(newFile);
     state.activeId = newFile.id;
@@ -168,4 +171,31 @@ DOM.copyBtn.addEventListener('click', () => {
         DOM.copyBtn.textContent = 'Copied!';
         setTimeout(() => DOM.copyBtn.textContent = originalText, 2000);
     });
+});
+
+// Sync state across multiple tabs
+window.addEventListener('storage', (e) => {
+    if (e.key === 'notex-files' && e.newValue) {
+        try {
+            const newFiles = JSON.parse(e.newValue);
+            if (Array.isArray(newFiles)) {
+                state.files = newFiles;
+                renderSidebar();
+
+                const activeFile = state.files.find(f => f.id === state.activeId);
+                if (activeFile) {
+                    if (DOM.editor.value === lastSavedContent && activeFile.content !== lastSavedContent) {
+                        loadActiveFile();
+                    }
+                } else if (state.files.length > 0) {
+                    state.activeId = state.files[0].id;
+                    saveState();
+                    renderSidebar();
+                    loadActiveFile();
+                }
+            }
+        } catch (err) {
+            console.error('Failed to sync across tabs', err);
+        }
+    }
 });

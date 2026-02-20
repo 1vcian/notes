@@ -1,4 +1,4 @@
-import { state, saveState } from './state.js';
+import { state, saveState, syncState } from './state.js';
 import { generateName, getUniqueName, createNewFile, compressToURL } from './utils.js';
 
 export const DOM = {
@@ -118,6 +118,7 @@ export function render() {
 }
 
 export function saveCurrentFile() {
+    syncState();
     const content = DOM.editor.value;
     const file = state.files.find(f => f.id === state.activeId);
     if (!file) return;
