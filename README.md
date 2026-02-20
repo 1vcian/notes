@@ -41,7 +41,7 @@ Notex is built to be brutally fast and delightfully lightweight.
 
 ### 1. Online Usage
 
-Since Notex has no server dependency, simply visit the hosted URL (e.g. `[Your Custom Domain]/notex`).
+Since Notex has no server dependency, simply visit the hosted URL (e.g. `1vcian.me/notex`).
 
 ### 2. Local Installation
 
