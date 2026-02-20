@@ -1,5 +1,5 @@
 import { state, saveState } from './state.js';
-import { createNewFile } from './utils.js';
+import { createNewFile, decompressFromURL } from './utils.js';
 import { DOM, loadActiveFile, renderSidebar, render, closeDeleteModal } from './ui.js';
 
 // Initialize
@@ -13,12 +13,7 @@ window.addEventListener('load', () => {
     // Check if we need to load a link
     let hashContent = null;
     if (hash) {
-        try {
-            let compressed = hash;
-            if (hash.includes('|')) compressed = hash.split('|')[1];
-            const decompressed = LZString.decompressFromEncodedURIComponent(compressed);
-            if (decompressed !== null) hashContent = decompressed;
-        } catch (e) { }
+        hashContent = decompressFromURL(hash);
     }
 
     if (state.files.length === 0) {
@@ -71,13 +66,7 @@ window.addEventListener('hashchange', () => {
     const hash = window.location.hash.substring(1);
     if (!hash) return;
 
-    let hashContent = null;
-    try {
-        let compressed = hash;
-        if (hash.includes('|')) compressed = hash.split('|')[1];
-        const decompressed = LZString.decompressFromEncodedURIComponent(compressed);
-        if (decompressed !== null) hashContent = decompressed;
-    } catch (e) { }
+    let hashContent = decompressFromURL(hash);
 
     if (hashContent) {
         const existing = state.files.find(f => f.content === hashContent);

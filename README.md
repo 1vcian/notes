@@ -35,7 +35,7 @@ Notex is built to be brutally fast and delightfully lightweight.
 - **Frontend Core:** Vanilla HTML5, CSS3, and ES6 JavaScript Modules.
 - **Markdown Parsing:** [markdown-it](https://github.com/markdown-it/markdown-it)
 - **Syntax Highlighting:** [PrismJS](https://prismjs.com/)
-- **Compression:** [lz-string](https://github.com/pieroxy/lz-string)
+- **Compression:** [fflate](https://github.com/101arrowz/fflate) (Deflate/Zlib)
 
 ## 🚀 Getting Started
 

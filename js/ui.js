@@ -1,5 +1,5 @@
 import { state, saveState } from './state.js';
-import { generateName, getUniqueName, createNewFile } from './utils.js';
+import { generateName, getUniqueName, createNewFile, compressToURL } from './utils.js';
 
 export const DOM = {
     editor: document.getElementById('editor'),
@@ -33,7 +33,7 @@ export function loadActiveFile() {
 
         // Update the URL so the "Copy Link" button grabs the hash for the active file
         try {
-            const compressed = LZString.compressToEncodedURIComponent(file.content);
+            const compressed = compressToURL(file.content);
             window.history.replaceState(null, '', '#' + compressed);
         } catch (e) {
             console.error(e);
@@ -139,7 +139,7 @@ export function saveCurrentFile() {
     renderSidebar();
 
     try {
-        const compressed = LZString.compressToEncodedURIComponent(content);
+        const compressed = compressToURL(content);
         window.history.replaceState(null, '', '#' + compressed);
         DOM.status.textContent = 'Saved';
         lastSavedContent = content;
